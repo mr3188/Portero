@@ -33,6 +33,7 @@ class Portero:
     self.ring_button_pin=self.config.getint("portero", "ring_button_pin")
     self.light_pin=self.config.getint("portero", "light_pin")
     self.door_lock_pin=self.config.getint("portero", "door_lock_pin")
+    self.target_sip_account=self.config.get("portero", "target_sip_account")
     
     callbacks = linphone.Factory.get().create_core_cbs()
     callbacks.call_state_changed = self.call_state_changed
