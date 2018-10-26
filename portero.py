@@ -100,7 +100,7 @@ class Portero:
     self.call=call
     self.callState=state
     if state == linphone.CallState.IncomingReceived:
-      if call.remote_address.as_string_uri_only() == target_sip_account:
+      if call.remote_address.as_string_uri_only() == self.target_sip_account:
         params = core.create_call_params(call)
         core.accept_call_with_params(call, params)
       else:
