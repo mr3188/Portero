@@ -100,7 +100,7 @@ class Portero:
     self.call=call
     self.callState=state
     if state == linphone.CallState.IncomingReceived:
-      if call.remote_address.as_string_uri_only() in self.whitelist:
+      if call.remote_address.as_string_uri_only() == target_sip_account:
         params = core.create_call_params(call)
         core.accept_call_with_params(call, params)
       else:
@@ -117,16 +117,11 @@ class Portero:
 
   def message_received(self, core, room, message):
     sender = message.from_address
-    if sender.as_string_uri_only() in self.whitelist:
-      capture_file = self.path + '/capture.jpg'
-      self.core.take_preview_snapshot(capture_file)
-      time.sleep(2)
-      content = self.core.create_content()
-      content.name = 'capture.jpg'
-      capture = open(capture_file, 'rb')
-      content.buffer = bytearray(capture.read())
-      msg = room.create_file_transfer_message(content)
+    if sender.as_string_uri_only() == self.target_sip_account:      
+      msg = room.create_file_transfer_message("received "+message)
+      print "received "+message
       room.send_chat_message(msg)
+      self.quit=True
     
   def run(self):
     while not self.quit:
