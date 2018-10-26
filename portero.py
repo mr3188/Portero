@@ -118,10 +118,9 @@ class Portero:
   def message_received(self, core, room, message):
     sender = message.from_address
     if sender.as_string_uri_only() == self.target_sip_account:      
-      msg = room.create_file_transfer_message("received "+message)
-      print "received "+message
-      room.send_chat_message(msg)
-      self.quit=True
+      msg = room.create_message("received " +message)
+      chat_room.send_chat_message(msg)
+ 
     
   def run(self):
     while not self.quit:
