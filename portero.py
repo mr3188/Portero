@@ -15,9 +15,8 @@ import ConfigParser
 
 
 class Portero:
-  def __init__(self, whitelist=[]):
-    self.quit = False
-    self.whitelist = whitelist
+  def __init__(self):
+    self.quit = False    
     self.callRef = None
     self.callState = linphone.CallState.Idle
     self.registered = False   
@@ -51,12 +50,19 @@ class Portero:
     self.btn = Button(self.ring_button_pin, hold_time=0.5)
     self.btn.when_pressed = self.initCall
   
-    self.led = LED(self.light_pin)
-    self.led.on()
+    lightOn()
 
   def loadConfigFile(self, configPath):    
     logging.info("Loading config from "+configPath)    
     self.config.read(configPath)
+
+  def lightOn()
+    self.led = LED(self.light_pin)
+    self.led.on() 
+
+  def lightOff()
+    self.led = LED(self.light_pin)
+    self.led.off() 
 
   def initCall(self):
     call = self.core.invite(self.target_sip_account)
@@ -105,6 +111,9 @@ class Portero:
       print "Call state changed to OutgoingRinging"
     elif state == linphone.CallState.Connected:
       print "Call state changed to Connected"
+      chat_room = core.get_chat_room_from_uri(call.remote_address_as_uri)
+      msg = chat_room.create_message("Connected from portero")
+      chat_room.send_chat_message(msg)
 
   def message_received(self, core, room, message):
     sender = message.from_address
