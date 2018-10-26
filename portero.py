@@ -119,7 +119,7 @@ class Portero:
     sender = message.from_address
     if sender.as_string_uri_only() == self.target_sip_account:      
       msg = room.create_message("received " +message)
-      chat_room.send_chat_message(msg)
+      room.send_chat_message(msg)
  
     
   def run(self):
