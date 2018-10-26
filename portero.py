@@ -56,11 +56,11 @@ class Portero:
     logging.info("Loading config from "+configPath)    
     self.config.read(configPath)
 
-  def lightOn()
+  def lightOn():
     self.led = LED(self.light_pin)
     self.led.on() 
 
-  def lightOff()
+  def lightOff():
     self.led = LED(self.light_pin)
     self.led.off() 
 
