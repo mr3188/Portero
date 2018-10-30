@@ -67,11 +67,9 @@ class Portero:
     self.config.read(configPath)
 
   def lightOn(self):
-    self.led = LED(self.light_pin)
     self.led.on() 
 
-  def lightOff(self):
-    self.led = LED(self.light_pin)
+  def lightOff(self):    
     self.led.off() 
 
   def initCall(self):
