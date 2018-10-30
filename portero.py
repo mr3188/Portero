@@ -132,8 +132,8 @@ class Portero:
       if message.text=="open":      
         self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
 
-      msg = room.create_message("received " +message.text)
-      room.send_chat_message(msg)
+      responseMsg = room.create_message("received " +message.text)
+      room.send_chat_message(msg=responseMsg)
     
   def run(self):
     while not self.quit:
