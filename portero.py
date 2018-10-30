@@ -127,8 +127,11 @@ class Portero:
 
   def message_received(self, core, room, message):
     sender = message.from_address
-    if sender.as_string_uri_only() == self.target_sip_account:      
-      self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
+    if sender.as_string_uri_only() == self.target_sip_account:
+      
+      if message.text=="open":      
+        self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
+
       msg = room.create_message("received " +message.text)
       room.send_chat_message(msg)
     
