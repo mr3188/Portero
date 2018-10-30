@@ -121,6 +121,7 @@ class Portero:
       print "Call state changed to OutgoingRinging"
     elif state == linphone.CallState.Connected:
       print "Call state changed to Connected"
+      print call.remote_address.as_string_uri_only()
       chatRoom = core.get_chat_room_from_uri(call.remote_address.as_string_uri_only())
       msg = chatRoom.create_message("Connected from portero")
       chatRoom.send_chat_message(msg)
@@ -131,6 +132,12 @@ class Portero:
       
       if message.text=="open":      
         self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
+
+      if message.text=="light off":
+        self.lightOff()
+
+      if message.text=="light on":
+        self.lightOn()
 
       responseMsg = room.create_message("received " +message.text)
       room.send_chat_message(msg=responseMsg)
