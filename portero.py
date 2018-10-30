@@ -10,6 +10,7 @@ import os
 import sys
 from gpiozero import Button
 from gpiozero import LED
+from gpiozero import DigitalOutputDevice
 from signal import pause
 import ConfigParser
 
@@ -21,31 +22,40 @@ class Portero:
     self.callState = linphone.CallState.Idle
     self.registered = False   
     path = os.path.dirname(os.path.abspath(__file__))
+
+    # configuration
     self.config = ConfigParser.ConfigParser() 
     self.configFilePath= path + '/config.rc'
     self.loadConfigFile(self.configFilePath)   
-    self.logger = logging.getLogger()
-    self.logger.setLevel(logging.DEBUG)
-    self.logfile = logging.FileHandler(path + '/portero.log')
-    self.logger.addHandler(self.logfile)
-
+    
     self.ring_button_pin=self.config.getint("portero", "ring_button_pin")
     self.light_pin=self.config.getint("portero", "light_pin")
     self.door_lock_pin=self.config.getint("portero", "door_lock_pin")
     self.target_sip_account=self.config.get("portero", "target_sip_account")
+    self.door_lock_open_time=self.config.getint("portero", "door_lock_open_time")
+
+
+    # logging
+    self.logger = logging.getLogger()
+    self.logger.setLevel(logging.ERROR)
+    self.logfile = logging.FileHandler(path + '/portero.log')
+    self.logger.addHandler(self.logfile)
     
+    # set linphone callbacks
     callbacks = linphone.Factory.get().create_core_cbs()
     callbacks.call_state_changed = self.call_state_changed
     callbacks.registration_state_changed = self.registration_state_changed
     callbacks.message_received = self.message_received
-
-
-    signal.signal(signal.SIGINT, self.signal_handler)
     linphone.set_log_handler(self.log_handler)
 
     self.quit_when_registered = False
     self.core = linphone.Factory.get().create_core(callbacks, path + '/config.rc', None)
+
+    signal.signal(signal.SIGINT, self.signal_handler)
     self.path = path
+
+    # configure hardware
+    self.doorLock=DigitalOutputDevice(self.door_lock_pin)
 
     self.btn = Button(self.ring_button_pin, hold_time=0.5)
     self.btn.when_pressed = self.initCall
@@ -111,16 +121,16 @@ class Portero:
       print "Call state changed to OutgoingRinging"
     elif state == linphone.CallState.Connected:
       print "Call state changed to Connected"
-      chat_room = core.get_chat_room_from_uri(call.remote_address_as_uri)
-      msg = chat_room.create_message("Connected from portero")
-      chat_room.send_chat_message(msg)
+      chatRoom = core.get_chat_room_from_uri(call.remote_address.as_string_uri_only())
+      msg = chatRoom.create_message("Connected from portero")
+      chatRoom.send_chat_message(msg)
 
   def message_received(self, core, room, message):
     sender = message.from_address
     if sender.as_string_uri_only() == self.target_sip_account:      
-      msg = room.create_message("received " +message)
+      self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
+      msg = room.create_message("received " +message.text)
       room.send_chat_message(msg)
- 
     
   def run(self):
     while not self.quit:
