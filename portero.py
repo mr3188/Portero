@@ -60,13 +60,14 @@ class Portero:
     self.btn = Button(self.ring_button_pin, hold_time=0.5)
     self.btn.when_pressed = self.initCall
   
+    self.led = LED(self.light_pin)
     self.lightOn()
 
   def loadConfigFile(self, configPath):    
     logging.info("Loading config from "+configPath)    
     self.config.read(configPath)
 
-  def lightOn(self):
+  def lightOn(self):    
     self.led.on() 
 
   def lightOff(self):    
