@@ -14,7 +14,6 @@ Comunicate video and audio with a smartphone using VoIP library
 
 BOM
 ===
-
 1 x Rapasberry Pi model 3
 1 x Raspberry Pi Camera
 1 x PoE Splitter 12v 2A Output
