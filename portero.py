@@ -30,9 +30,10 @@ class Portero:
     
     self.ring_button_pin=self.config.getint("portero", "ring_button_pin")
     self.light_pin=self.config.getint("portero", "light_pin")
-    self.door_lock_pin=self.config.getint("portero", "door_lock_pin")
+    self.door_lock_pin=self.config.getint("door_lock", "door_lock_pin")
     self.target_sip_account=self.config.get("portero", "target_sip_account")
-    self.door_lock_open_time=self.config.getint("portero", "door_lock_open_time")
+    self.door_lock_time=self.config.getint("door_lock", "door_lock_time")
+    self.door_lock_memory=self.config.getboolean("door_lock", "door_lock_memory")
 
 
     # logging
@@ -75,7 +76,8 @@ class Portero:
 
   def initCall(self):
     call = self.core.invite(self.target_sip_account)
-   
+#   print 'Volume Gain' + str(call.speaker_volume_gain)
+    
     if call is None:
       print "outgoing call error"
 
@@ -130,7 +132,7 @@ class Portero:
     if sender.as_string_uri_only() == self.target_sip_account:
       
       if message.text=="open":      
-        self.doorLock.blink(on_time=self.door_lock_open_time, n=1)
+        self.doorLock.blink(on_time=self.door_lock_time, n=1)
 
       if message.text=="light off":
         self.lightOff()
@@ -140,7 +142,7 @@ class Portero:
 
       responseMsg = room.create_message("received " +message.text)
       room.send_chat_message(msg=responseMsg)
-    
+  
   def run(self):
     while not self.quit:
         self.core.iterate()
