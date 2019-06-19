@@ -7,6 +7,8 @@
 ring_button_pin=16
 light_pin=12
 target_sip_account=sip:user@domain.com
+speaker_mute_pin=22
+
 
 [door_lock]
 door_lock_pin=5
