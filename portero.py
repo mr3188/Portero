@@ -30,6 +30,7 @@ class Portero:
     
     self.ring_button_pin=self.config.getint("portero", "ring_button_pin")
     self.light_pin=self.config.getint("portero", "light_pin")
+    self.speaker_mute_pin=self.config.getint("portero", "speaker_mute_pin")
     self.door_lock_pin=self.config.getint("door_lock", "door_lock_pin")
     self.target_sip_account=self.config.get("portero", "target_sip_account")
     self.door_lock_time=self.config.getint("door_lock", "door_lock_time")
@@ -63,6 +64,8 @@ class Portero:
   
     self.led = LED(self.light_pin)
     self.lightOn()
+
+    self.speaker= DigitalOutputDevice(self.speaker_mute_pin)
 
   def loadConfigFile(self, configPath):    
     logging.info("Loading config from "+configPath)    
@@ -112,15 +115,22 @@ class Portero:
     self.callState=state
     if state == linphone.CallState.IncomingReceived:
       if call.remote_address.as_string_uri_only() == self.target_sip_account:
+	self.speaker.on()
         params = core.create_call_params(call)
         core.accept_call_with_params(call, params)
       else:
         core.decline_call(call, linphone.Reason.Declined)
     elif state == linphone.CallState.OutgoingProgress:
+      self.speaker.on()
       print "Call state changed to OutgoingProgress"
     elif state == linphone.CallState.OutgoingRinging:
+      self.speaker.on()
       print "Call state changed to OutgoingRinging"
+    elif state == linphone.CallState.CallEnd:
+      self.speaker.off()
+      print "Call state changed to CallEnd"
     elif state == linphone.CallState.Connected:
+      self.speaker.on()
       print "Call state changed to Connected"
       print call.remote_address.as_string_uri_only()
       chatRoom = core.get_chat_room_from_uri(call.remote_address.as_string_uri_only())
